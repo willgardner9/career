@@ -9,6 +9,7 @@ pub struct AppState {
     pub db: DatabaseConnection,
 }
 
+/// Build the application router.
 pub fn app(db: DatabaseConnection) -> Router {
     Router::new()
         .route("/health", get(health))
