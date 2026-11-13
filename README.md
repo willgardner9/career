@@ -5,7 +5,7 @@ A basic Rust web API.
 ## Stack
 
 - Rust (edition 2024), tokio, axum
-- Postgres 17 with SeaORM
+- Postgres 18 with SeaORM
 - SeaORM migrations in the `migration` crate
 - `tower-http` request tracing
 - Docker Compose to run the full stack
