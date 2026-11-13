@@ -86,6 +86,19 @@ The tests use a mock database. They do not need Postgres.
 cargo test --workspace
 ```
 
+## Git hooks
+
+The repository has Git hooks in `.githooks/`. Turn them on one time in each clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+- `pre-commit` runs `cargo fmt --all --check`.
+- `pre-push` runs `cargo clippy --workspace --all-targets -- -D warnings`.
+
+These are the same checks that CI runs on a pull request. To skip a hook one time, add `--no-verify` to the Git command.
+
 ## Layout
 
 - `src/config.rs`: configuration struct, read from the environment
@@ -93,4 +106,5 @@ cargo test --workspace
 - `src/main.rs`: start-up, database connection, and server
 - `migration/`: migration crate and its CLI binary
 - `tests/`: integration tests
+- `.githooks/`: Git hooks for format and lint checks
 - `Dockerfile`: multi-stage build with cargo-chef dependency caching

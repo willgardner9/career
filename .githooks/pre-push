@@ -1,0 +1,7 @@
+#!/bin/sh
+# Run the linter before each push. This check is slower than the format check.
+echo "pre-push: cargo clippy"
+if ! cargo clippy --workspace --all-targets -- -D warnings; then
+    echo "pre-push: clippy found problems. Fix them and push again." >&2
+    exit 1
+fi
