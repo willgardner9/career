@@ -1,5 +1,14 @@
 #!/bin/sh
 # Check the format before each commit. This check is fast.
+
+# Git apps with a GUI do not load the shell profile. Add the rustup directory.
+PATH="$HOME/.cargo/bin:$PATH"
+
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "pre-commit: cargo not found. Install Rust with rustup." >&2
+    exit 1
+fi
+
 if ! cargo fmt --all --check >/dev/null 2>&1; then
     echo "pre-commit: the code is not formatted. Run 'cargo fmt --all' and commit again." >&2
     exit 1

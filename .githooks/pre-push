@@ -1,7 +1,16 @@
 #!/bin/sh
 # Run the linter before each push. This check is slower than the format check.
+
+# Git apps with a GUI do not load the shell profile. Add the rustup directory.
+PATH="$HOME/.cargo/bin:$PATH"
+
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "pre-push: cargo not found. Install Rust with rustup." >&2
+    exit 1
+fi
+
 echo "pre-push: cargo clippy"
 if ! cargo clippy --workspace --all-targets -- -D warnings; then
-    echo "pre-push: clippy found problems. Fix them and push again." >&2
+    echo "pre-push: clippy failed. Read the output above, fix the problem, and push again." >&2
     exit 1
 fi
