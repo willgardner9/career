@@ -4,13 +4,13 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: career
+      POSTGRES_DB: dearest
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d career"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dearest"]
       interval: 3s
       timeout: 3s
       retries: 10
@@ -18,7 +18,7 @@ services:
   api:
     build: .
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/career
+      DATABASE_URL: postgres://postgres:postgres@db:5432/dearest
       BIND_ADDR: 0.0.0.0:3000
       RUST_LOG: info,tower_http=debug
     ports:

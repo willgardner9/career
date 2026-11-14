@@ -1,4 +1,4 @@
-# career
+# dearest
 
 A basic Rust web API.
 
@@ -39,6 +39,7 @@ The API reads these in `src/config.rs`. It also loads a `.env` file if one exist
 | `DATABASE_URL` | none (required) | Postgres connection string |
 | `BIND_ADDR` | `0.0.0.0:3000` | Address the API binds to |
 | `DB_MAX_CONNECTIONS` | `10` | Maximum size of the database connection pool |
+| `CORS_ALLOWED_ORIGINS` | `https://app.dearest.rsvp` | Browser origins that may call the API. Separate origins with a comma |
 | `RUST_LOG` | `info,tower_http=debug` | Log filter |
 | `API_PORT` | `3000` | Host port that Docker Compose publishes |
 
@@ -48,7 +49,7 @@ You need a Rust toolchain and a macOS or Linux C toolchain. Start only the datab
 
 ```bash
 docker compose up -d db
-export DATABASE_URL=postgres://postgres:postgres@localhost:5432/career
+export DATABASE_URL=postgres://postgres:postgres@localhost:5432/dearest
 cargo run
 ```
 

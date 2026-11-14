@@ -20,9 +20,9 @@ FROM debian:bookworm-slim
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/career /usr/local/bin/career
+COPY --from=builder /app/target/release/dearest /usr/local/bin/dearest
 COPY --from=builder /app/target/release/migration /usr/local/bin/migration
 RUN useradd --system --no-create-home --shell /usr/sbin/nologin app
 USER app
 EXPOSE 3000
-CMD ["career"]
+CMD ["dearest"]
