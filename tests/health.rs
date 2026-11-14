@@ -8,7 +8,7 @@ use serde_json::{Value, json};
 use tower::ServiceExt;
 
 async fn get_health(db: sea_orm::DatabaseConnection) -> (StatusCode, Value) {
-    let response = career::app(db)
+    let response = dearest::app(db, vec![])
         .oneshot(Request::get("/health").body(Body::empty()).unwrap())
         .await
         .unwrap();

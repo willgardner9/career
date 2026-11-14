@@ -1,15 +1,19 @@
 use std::{env, net::SocketAddr};
 
 use anyhow::{Context, Result};
+use axum::http::HeaderValue;
 
 const DEFAULT_BIND_ADDR: &str = "0.0.0.0:3000";
 const DEFAULT_DB_MAX_CONNECTIONS: u32 = 10;
+const DEFAULT_CORS_ALLOWED_ORIGINS: &str = "https://app.dearest.rsvp";
 
 #[derive(Debug, Clone)]
 pub struct Config {
     pub database_url: String,
     pub bind_addr: SocketAddr,
     pub db_max_connections: u32,
+    /// Browser origins that may call the API. Each origin has a scheme and a host.
+    pub cors_allowed_origins: Vec<HeaderValue>,
 }
 
 impl Config {
@@ -33,10 +37,23 @@ impl Config {
             None => DEFAULT_DB_MAX_CONNECTIONS,
         };
 
+        let cors_allowed_origins = lookup("CORS_ALLOWED_ORIGINS")
+            .unwrap_or_else(|| DEFAULT_CORS_ALLOWED_ORIGINS.to_owned())
+            .split(',')
+            .map(str::trim)
+            .filter(|origin| !origin.is_empty())
+            .map(|origin| {
+                origin.parse().with_context(|| {
+                    format!("CORS_ALLOWED_ORIGINS has an invalid origin: {origin}")
+                })
+            })
+            .collect::<Result<Vec<HeaderValue>>>()?;
+
         Ok(Self {
             database_url,
             bind_addr,
             db_max_connections,
+            cors_allowed_origins,
         })
     }
 }
@@ -61,6 +78,38 @@ mod tests {
         assert_eq!(config.database_url, "postgres://x");
         assert_eq!(config.bind_addr, DEFAULT_BIND_ADDR.parse().unwrap());
         assert_eq!(config.db_max_connections, DEFAULT_DB_MAX_CONNECTIONS);
+        assert_eq!(
+            config.cors_allowed_origins,
+            vec![HeaderValue::from_static("https://app.dearest.rsvp")]
+        );
+    }
+
+    #[test]
+    fn reads_cors_allowed_origins() {
+        let config = Config::from_lookup(lookup(&[
+            ("DATABASE_URL", "postgres://x"),
+            (
+                "CORS_ALLOWED_ORIGINS",
+                "http://localhost:5173, https://app.dearest.rsvp",
+            ),
+        ]))
+        .unwrap();
+        assert_eq!(
+            config.cors_allowed_origins,
+            vec![
+                HeaderValue::from_static("http://localhost:5173"),
+                HeaderValue::from_static("https://app.dearest.rsvp"),
+            ]
+        );
+    }
+
+    #[test]
+    fn rejects_invalid_cors_allowed_origins() {
+        let result = Config::from_lookup(lookup(&[
+            ("DATABASE_URL", "postgres://x"),
+            ("CORS_ALLOWED_ORIGINS", "bad\nvalue"),
+        ]));
+        assert!(result.is_err());
     }
 
     #[test]

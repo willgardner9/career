@@ -1,4 +1,4 @@
-use career::config::Config;
+use dearest::config::Config;
 use migration::{Migrator, MigratorTrait};
 use sea_orm::{ConnectOptions, Database};
 use tokio::{net::TcpListener, signal};
@@ -24,7 +24,7 @@ async fn main() -> anyhow::Result<()> {
 
     let listener = TcpListener::bind(config.bind_addr).await?;
     tracing::info!("listening on {}", config.bind_addr);
-    axum::serve(listener, career::app(db))
+    axum::serve(listener, dearest::app(db, config.cors_allowed_origins))
         .with_graceful_shutdown(shutdown_signal())
         .await?;
     Ok(())
